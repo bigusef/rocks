@@ -12,19 +12,19 @@ class AppContext(ApplicationContext):
         return self.app.exec_()
 
     @cached_property
-    def get_ui(self):
+    def load_ui(self):
         return {
             "load": self.get_resource('theme/load.ui'),
             "statistic": self.get_resource('theme/statistic.ui'),
         }
 
     def show_loader(self):
-        self.loader = LoadUIWindow(self.get_ui.get('load'))
+        self.loader = LoadUIWindow(self.load_ui.get('load'))
         self.loader.switch_window.connect(self.show_statistic)
         self.loader.show()
 
     def show_statistic(self, data):
-        self.statistic = StatisticUIWindow(self.get_ui.get('statistic'), data)
+        self.statistic = StatisticUIWindow(self.load_ui.get('statistic'), data)
         self.statistic.switch_window.connect(self.show_loader)
         self.loader.close()
         self.statistic.show()
