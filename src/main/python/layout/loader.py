@@ -10,7 +10,7 @@ class LoadUIWindow(QtWidgets.QWidget):
         self.handle_ui_controlle()
 
     def handle_ui_controlle(self):
-        self.setFixedSize(350, 200)
+        self.setFixedSize(471, 280)
 
         self.btn_open_file = self.findChild(QtWidgets.QPushButton, 'btnReadFile')
         self.btn_open_file.clicked.connect(self.switcher)
