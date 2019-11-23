@@ -26,7 +26,6 @@ class AppContext(ApplicationContext):
     def show_statistic(self, data):
         self.statistic = StatisticUIWindow(self.load_ui.get('statistic'), data)
         self.statistic.switch_window.connect(self.show_loader)
-        self.loader.close()
         self.statistic.show()
 
 
