@@ -15,9 +15,6 @@ import regex as re
 
 class LoadUIWindow(QtWidgets.QWidget):
     switch_window = QtCore.pyqtSignal(list)
-    # headers = []
-    # units = []
-    # info=[]
     def __init__(self, ui_file: str):
         super(LoadUIWindow, self).__init__()
         uic.loadUi(ui_file, self)
@@ -67,18 +64,33 @@ class LoadUIWindow(QtWidgets.QWidget):
         fileName, _ = QFileDialog.getOpenFileName(
             self, "QFileDialog.getSaveFileName()", "", "All Files (*);;Text Files (*.txt)", options=options)
         if fileName:
-            #read headers
+            # get headers
             df_headers = pd.read_csv(fileName, skiprows=18,nrows=1, header=None)
             rx = r'(?V1)(?<=[^A-Za-z0-9])(?=\d)'
-
+            
             for index in range(df_headers.shape[1]):
                 columnSeriesObj = df_headers.iloc[: , index]
                 arr_headers = re.split(rx, ''.join(str(e) for e in columnSeriesObj.values[0]))
                 header_result = " ".join(arr_headers[0].split()).split(' ')
-            
-            #read data
-            df = pd.read_csv(fileName, sep='', header=None, names=header_result,
+            ##############
+
+
+            #get units and groups
+            df_units_groups = pd.read_csv(fileName, sep='', header=None,nrows=2, names=header_result,
+                delimiter=r'\s+', low_memory=False, skiprows=20)
+            arr_units=[]
+            arr_groups=[]
+            for index in range(df_units_groups.shape[1]):
+                columnSeriesObj_units = df_units_groups.iloc[0:1 , index]
+                arr_units.append(columnSeriesObj_units.values[0][1:-1])
+                columnSeriesObj_groups = df_units_groups.iloc[1:2 , index]
+                arr_groups.append(columnSeriesObj_groups.values[0])
+            #####################
+
+            #read dataframe
+            df_data = pd.read_csv(fileName, sep='', header=None, names=header_result,
                 delimiter=r'\s+', low_memory=False, skiprows=22)
 
-            # replace unneeded values              
-            df.replace([65535, -999.250], np.nan, inplace=True)
+            # # replace unneeded values              
+            df_data.replace([65535, -999.250], np.nan, inplace=True)
+            print(df_data)
