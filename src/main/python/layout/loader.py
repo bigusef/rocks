@@ -65,31 +65,28 @@ class LoadUIWindow(QtWidgets.QWidget):
         fileName, _ = QFileDialog.getOpenFileName(
             self, "QFileDialog.getSaveFileName()", "", "All Files (*);;Text Files (*.txt)", options=options)
         if fileName:
-            arr_units=[]
-            arr_headers=[]
-            # arr_data = []
-            # get headers
-            # df_data = pd.read_csv(fileName,  skiprows=0,nrows=253, header=None,encoding = 'unicode_escape')
-            # print(df_data)
+            self.arr_units=[]
+            self.arr_headers=[]
+            self.df_info = pd.read_csv(fileName,  skiprows=0,nrows=253, header=None,encoding = 'unicode_escape')
+
             df_headers = pd.read_csv(fileName, skiprows=254,nrows=1, header=None,encoding = 'unicode_escape')
-            # rx = r'(?V1)(?<=[^A-Za-z0-9])(?=\d)'
             
             for index in range(df_headers.shape[1]):
                 columnSeriesObj = df_headers.iloc[: , index]
-                arr_headers.append(columnSeriesObj.values[0])
+                self.arr_headers.append(columnSeriesObj.values[0])
 
             # modify headers and modify duplicates
             final_list = [] 
-            for num in arr_headers: 
+            for num in self.arr_headers: 
                 if num not in final_list:
                     final_list.append(num)
                 else:
                     num += str(uuid.uuid1())
                     final_list.append(num)
-            arr_headers = final_list
+            self.arr_headers = final_list
 
             # check if there is duplicates in headers
-            print('Duplicates in headers: ', len(set([x for x in arr_headers if arr_headers.count(x) > 1]))>0)
+            print('Duplicates in headers: ', len(set([x for x in self.arr_headers if self.arr_headers.count(x) > 1]))>0)
 
             #get units and groups
             df_units_groups = pd.read_csv(fileName, sep='', header=None,nrows=1,
@@ -97,10 +94,10 @@ class LoadUIWindow(QtWidgets.QWidget):
 
             for index in range(df_units_groups.shape[1]):
                 columnSeriesObj_units = df_units_groups.iloc[0:1 , index]
-                arr_units.append(columnSeriesObj_units.values[0][1:-1])
+                self.arr_units.append(columnSeriesObj_units.values[0][1:-1])
             #####################
 
             # read data and elimnate un-needed values
-            self.df_data = pd.read_csv(fileName,header=None,skiprows=258,encoding = 'unicode_escape', names=arr_headers)
+            self.df_data = pd.read_csv(fileName,header=None,skiprows=258,encoding = 'unicode_escape', names=self.arr_headers)
             self.df_data.replace([65535, -999.250], np.nan, inplace=True)
             # print(self.df_data.TIME)
