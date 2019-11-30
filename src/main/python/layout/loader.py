@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 # import matplotlib
 # import matplotlib.pyplot as plt
-import regex as re
+# import regex as re
 import uuid
 class LoadUIWindow(QtWidgets.QWidget):
     switch_window = QtCore.pyqtSignal(list)
@@ -59,6 +59,7 @@ class LoadUIWindow(QtWidgets.QWidget):
 
     
     def saveFileDialog(self):
+        # open attachment window
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -66,9 +67,12 @@ class LoadUIWindow(QtWidgets.QWidget):
         if fileName:
             arr_units=[]
             arr_headers=[]
+            # arr_data = []
             # get headers
+            # df_data = pd.read_csv(fileName,  skiprows=0,nrows=253, header=None,encoding = 'unicode_escape')
+            # print(df_data)
             df_headers = pd.read_csv(fileName, skiprows=254,nrows=1, header=None,encoding = 'unicode_escape')
-            rx = r'(?V1)(?<=[^A-Za-z0-9])(?=\d)'
+            # rx = r'(?V1)(?<=[^A-Za-z0-9])(?=\d)'
             
             for index in range(df_headers.shape[1]):
                 columnSeriesObj = df_headers.iloc[: , index]
@@ -97,6 +101,6 @@ class LoadUIWindow(QtWidgets.QWidget):
             #####################
 
             # read data and elimnate un-needed values
-            df_data = pd.read_csv(fileName,header=None,skiprows=258,encoding = 'unicode_escape', names=arr_headers)           
-            dx = df_data.replace([65535, -999.250], np.nan, inplace=True)
-            # print(df_data.columns)
+            self.df_data = pd.read_csv(fileName,header=None,skiprows=258,encoding = 'unicode_escape', names=arr_headers)
+            self.df_data.replace([65535, -999.250], np.nan, inplace=True)
+            # print(self.df_data.TIME)
