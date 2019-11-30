@@ -46,3 +46,5 @@ instance/
 ### SASS and SCSS ###
 .sass-cache/
 *.css.map
+*.csv
+*.zip
