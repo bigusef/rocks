@@ -1,8 +1,7 @@
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtWidgets import (QWidget, QPushButton,
-                             QHBoxLayout, QVBoxLayout, QApplication, QMainWindow,  QInputDialog, QLineEdit, QFileDialog)
+                             QHBoxLayout, QVBoxLayout, QApplication, QMainWindow, QInputDialog, QLineEdit, QFileDialog)
 from PyQt5.QtGui import QIcon
-
 
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
@@ -13,18 +12,21 @@ import numpy as np
 # import matplotlib.pyplot as plt
 # import regex as re
 import uuid
+
+
 class LoadUIWindow(QtWidgets.QWidget):
     switch_window = QtCore.pyqtSignal(list)
+
     def __init__(self, ui_file: str):
         super(LoadUIWindow, self).__init__()
         uic.loadUi(ui_file, self)
-        self.handle_ui_controlle()
+        self.handle_ui_controller()
 
-    def handle_ui_controlle(self):
+    def handle_ui_controller(self):
         self.setFixedSize(471, 280)
 
         self.btn_open_file = self.findChild(QtWidgets.QPushButton, 'btnReadFile')
-        self.btn_open_file.clicked.connect(self.saveFileDialog)
+        self.btn_open_file.clicked.connect(self.save_file_dialog)
 
         self.btn_nswr = self.findChild(QtWidgets.QPushButton, 'btn_nswr')
         self.btn_nswr.clicked.connect(self.switcher)
@@ -57,27 +59,28 @@ class LoadUIWindow(QtWidgets.QWidget):
         ]
         self.switch_window.emit(data)
 
-    
-    def saveFileDialog(self):
+    def save_file_dialog(self):
         # open attachment window
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
-            self, "QFileDialog.getSaveFileName()", "", "All Files (*);;Text Files (*.txt)", options=options)
+            self,
+            "QFileDialog.getSaveFileName()", "", "All Files (*);;Text Files (*.txt)", options=options
+        )
         if fileName:
-            self.arr_units=[]
-            self.arr_headers=[]
-            self.df_info = pd.read_csv(fileName,  skiprows=0,nrows=253, header=None,encoding = 'unicode_escape')
+            self.arr_units = []
+            self.arr_headers = []
+            self.df_info = pd.read_csv(fileName, skiprows=0, nrows=253, header=None, encoding='unicode_escape')
 
-            df_headers = pd.read_csv(fileName, skiprows=254,nrows=1, header=None,encoding = 'unicode_escape')
-            
+            df_headers = pd.read_csv(fileName, skiprows=254, nrows=1, header=None, encoding='unicode_escape')
+
             for index in range(df_headers.shape[1]):
-                columnSeriesObj = df_headers.iloc[: , index]
+                columnSeriesObj = df_headers.iloc[:, index]
                 self.arr_headers.append(columnSeriesObj.values[0])
 
             # modify headers and modify duplicates
-            final_list = [] 
-            for num in self.arr_headers: 
+            final_list = []
+            for num in self.arr_headers:
                 if num not in final_list:
                     final_list.append(num)
                 else:
@@ -86,18 +89,19 @@ class LoadUIWindow(QtWidgets.QWidget):
             self.arr_headers = final_list
 
             # check if there is duplicates in headers
-            print('Duplicates in headers: ', len(set([x for x in self.arr_headers if self.arr_headers.count(x) > 1]))>0)
+            print('Duplicates in headers: ',
+                  len(set([x for x in self.arr_headers if self.arr_headers.count(x) > 1])) > 0)
 
-            #get units and groups
-            df_units_groups = pd.read_csv(fileName, sep='', header=None,nrows=1,
-                delimiter=r'\s+', low_memory=False, skiprows=256,encoding = 'unicode_escape')
+            # get units and groups
+            df_units_groups = pd.read_csv(fileName, sep='', header=None, nrows=1,
+                                          delimiter=r'\s+', low_memory=False, skiprows=256, encoding='unicode_escape')
 
             for index in range(df_units_groups.shape[1]):
-                columnSeriesObj_units = df_units_groups.iloc[0:1 , index]
+                columnSeriesObj_units = df_units_groups.iloc[0:1, index]
                 self.arr_units.append(columnSeriesObj_units.values[0][1:-1])
             #####################
 
             # read data and elimnate un-needed values
-            self.df_data = pd.read_csv(fileName,header=None,skiprows=258,encoding = 'unicode_escape', names=self.arr_headers)
+            self.df_data = pd.read_csv(fileName, header=None, skiprows=258, encoding='unicode_escape',
+                                       names=self.arr_headers)
             self.df_data.replace([65535, -999.250], np.nan, inplace=True)
-            # print(self.df_data.TIME)
