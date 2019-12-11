@@ -17,7 +17,6 @@ class LoaderWindow(QtWidgets.QWidget, Ui_LoadData):
 
     def handle_ui_controller(self):
         self.btn_read_file.clicked.connect(self.save_file_dialog)
-        self.progress_read_file.setRange(0, 100)
         self.btn_nswr.clicked.connect(self.switcher)
         self.btn_nfem.clicked.connect(self.switcher)
         self.btn_dfem.clicked.connect(self.switcher)
@@ -37,14 +36,14 @@ class LoaderWindow(QtWidgets.QWidget, Ui_LoadData):
         self.switch_window.emit(data)
 
     def save_file_dialog(self):
-        pass
         # open attachment window
-        # options = QFileDialog.Options()
-        # options |= QFileDialog.DontUseNativeDialog
-        # fileName, _ = QFileDialog.getOpenFileName(
-        #     self,
-        #     "QFileDialog.getSaveFileName()", "", "All Files (*);;Text Files (*.txt)", options=options
-        # )
+        file_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select Data File",
+            "",
+            "CSV Files (*.csv)"
+        )
+
         # if fileName:
         #     self.arr_units = []
         #     self.arr_headers = []
