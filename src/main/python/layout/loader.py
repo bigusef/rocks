@@ -104,7 +104,7 @@ class LoadUIWindow(QtWidgets.QWidget):
             self.data_chunks = pd.read_csv(fileName, header=None, skiprows=259, encoding='unicode_escape',
                                        names=self.arr_headers, chunksize=1000)
             # convert chunks to full dataframe
-            self.data = pd.concat(TextFileReader, ignore_index=True)
+            self.data = pd.concat(self.data_chunks, ignore_index=True)
             
             
             ##### print dimension of data frame####
