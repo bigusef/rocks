@@ -100,8 +100,17 @@ class LoadUIWindow(QtWidgets.QWidget):
                 columnSeriesObj_units = df_units_groups.iloc[0:1, index]
                 self.arr_units.append(columnSeriesObj_units.values[0][1:-1])
             #####################
+            # read and prepare data into chunks for progress bar
+            self.data_chunks = pd.read_csv(fileName, header=None, skiprows=259, encoding='unicode_escape',
+                                       names=self.arr_headers, chunksize=1000)
+            # convert chunks to full dataframe
+            self.data = pd.concat(TextFileReader, ignore_index=True)
+            
+            
+            ##### print dimension of data frame####
+            # print(self.df_data.shape[0], self.df_data.shape[1])
 
-            # read data and elimnate un-needed values
-            self.df_data = pd.read_csv(fileName, header=None, skiprows=258, encoding='unicode_escape',
-                                       names=self.arr_headers)
-            self.df_data.replace([65535, -999.250], np.nan, inplace=True)
+
+
+            #replace values
+            # self.df_data.replace([65535, -999.250], np.nan, inplace=True)
