@@ -37,48 +37,53 @@ class LoaderWindow(QtWidgets.QWidget, Ui_LoadData):
 
     def save_file_dialog(self):
         # open attachment window
-        file_name, _ = QFileDialog.getOpenFileName(
+        fileName, _ = QFileDialog.getOpenFileName(
             self,
             "Select Data File",
             "",
             "CSV Files (*.csv)"
         )
+        if fileName:
+            self.arr_units = []
+            self.arr_headers = []
+            self.df_info = pd.read_csv(fileName, skiprows=0, nrows=253, header=None, encoding='unicode_escape')
 
-        # if fileName:
-        #     self.arr_units = []
-        #     self.arr_headers = []
-        #     self.df_info = pd.read_csv(fileName, skiprows=0, nrows=253, header=None, encoding='unicode_escape')
-        #
-        #     df_headers = pd.read_csv(fileName, skiprows=254, nrows=1, header=None, encoding='unicode_escape')
-        #
-        #     for index in range(df_headers.shape[1]):
-        #         columnSeriesObj = df_headers.iloc[:, index]
-        #         self.arr_headers.append(columnSeriesObj.values[0])
-        #
-        #     # modify headers and modify duplicates
-        #     final_list = []
-        #     for num in self.arr_headers:
-        #         if num not in final_list:
-        #             final_list.append(num)
-        #         else:
-        #             num += str(uuid.uuid1())
-        #             final_list.append(num)
-        #     self.arr_headers = final_list
-        #
-        #     # check if there is duplicates in headers
-        #     print('Duplicates in headers: ',
-        #           len(set([x for x in self.arr_headers if self.arr_headers.count(x) > 1])) > 0)
-        #
-        #     # get units and groups
-        #     df_units_groups = pd.read_csv(fileName, sep='', header=None, nrows=1,
-        #                                   delimiter=r'\s+', low_memory=False, skiprows=256, encoding='unicode_escape')
-        #
-        #     for index in range(df_units_groups.shape[1]):
-        #         columnSeriesObj_units = df_units_groups.iloc[0:1, index]
-        #         self.arr_units.append(columnSeriesObj_units.values[0][1:-1])
-        #     #####################
-        #
-        #     # read data and elimnate un-needed values
-        #     self.df_data = pd.read_csv(fileName, header=None, skiprows=258, encoding='unicode_escape',
-        #                                names=self.arr_headers)
-        #     self.df_data.replace([65535, -999.250], np.nan, inplace=True)
+            df_headers = pd.read_csv(fileName, skiprows=254, nrows=1, header=None, encoding='unicode_escape')
+
+            for index in range(df_headers.shape[1]):
+                columnSeriesObj = df_headers.iloc[:, index]
+                self.arr_headers.append(columnSeriesObj.values[0])
+
+            # modify headers and modify duplicates
+            final_list = []
+            for num in self.arr_headers:
+                if num not in final_list:
+                    final_list.append(num)
+                else:
+                    num += str(uuid.uuid1())
+                    final_list.append(num)
+            self.arr_headers = final_list
+
+            # check if there is duplicates in headers
+            print('Duplicates in headers: ',
+                  len(set([x for x in self.arr_headers if self.arr_headers.count(x) > 1])) > 0)
+
+            # get units and groups
+            df_units_groups = pd.read_csv(fileName, sep='', header=None, nrows=1,
+                                          delimiter=r'\s+', low_memory=False, skiprows=256, encoding='unicode_escape')
+
+            for index in range(df_units_groups.shape[1]):
+                columnSeriesObj_units = df_units_groups.iloc[0:1, index]
+                self.arr_units.append(columnSeriesObj_units.values[0][1:-1])
+            #####################
+            # read and prepare data into chunks for progress bar
+            self.data_chunks = pd.read_csv(fileName, header=None, skiprows=259, encoding='unicode_escape',
+                                           names=self.arr_headers, chunksize=1000)
+            # convert chunks to full dataframe
+            self.data = pd.concat(self.data_chunks, ignore_index=True)
+
+            ##### print dimension of data frame####
+            # print(self.df_data.shape[0], self.df_data.shape[1])
+
+            # replace values
+            # self.df_data.replace([65535, -999.250], np.nan, inplace=True)
