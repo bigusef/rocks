@@ -1,18 +1,19 @@
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets
+
+from .statistic_ui import Ui_StatisticForm
 
 
-class StatisticUIWindow(QtWidgets.QWidget):
+class StatisticWindow(QtWidgets.QWidget, Ui_StatisticForm):
     switch_window = QtCore.pyqtSignal()
 
-    def __init__(self, ui_file: str, data):
-        super(StatisticUIWindow, self).__init__()
-        uic.loadUi(ui_file, self)
+    def __init__(self, data, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.data = data
-        self.handle_ui_controlle()
+        self.setupUi(self)
+        self.handle_ui_controller()
 
-    def handle_ui_controlle(self):
-        self.list_widget = self.findChild(QtWidgets.QListWidget, 'listWidget')
-        self.list_widget.addItems(self.data)
+    def handle_ui_controller(self):
+        self.list_names.addItems(self.data)
 
     def closeEvent(self, event):
         self.switcher()
